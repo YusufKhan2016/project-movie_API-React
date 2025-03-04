@@ -2,7 +2,8 @@ import  { useEffect, useState,} from 'react'
 import Search from './components/search'
 import Spinner from './components/Spinner';
 import { MovieCard } from './components/MovieCard';
-import { useDebounce } from 'react-use';
+import { useClickAway, useDebounce } from 'react-use';
+import { updateSearchCount, getTrendingMovies } from './appwrite';
 
 //API - Application Programming Interface - a set of rules that allows one software application to talk to another
 
@@ -13,8 +14,8 @@ const API_OPTIONS = {
   method: 'GET',
   headers: {
     accept: 'application/json', // it is to define what kind of data do we accept in our application
-    // Authorization: `Bearer ${API_KEY}` // this one verifies who is trying to make that request
-    Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhZDEwYjQyOTUxZTg0YjQxMWJkZGQzZTk2ZWUyYzVmMiIsIm5iZiI6MTczOTY4NDc2OC40OTUwMDAxLCJzdWIiOiI2N2IxN2JhMDgxMjczNjJhZjc2ZGIyYmMiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.5Wg7XscL1oa6MCy9LMAim5_mZRYnz674eFc9_IQ4VkM` 
+    Authorization: `Bearer ${API_KEY}` // this one verifies who is trying to make that request
+    // Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhZDEwYjQyOTUxZTg0YjQxMWJkZGQzZTk2ZWUyYzVmMiIsIm5iZiI6MTczOTY4NDc2OC40OTUwMDAxLCJzdWIiOiI2N2IxN2JhMDgxMjczNjJhZjc2ZGIyYmMiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.5Wg7XscL1oa6MCy9LMAim5_mZRYnz674eFc9_IQ4VkM` 
     
   }
 }
@@ -25,6 +26,7 @@ function App() {
   const [searchTerm, setSearchTerm] = useState('');
   const [errorMessage, setErrorMessage] = useState('');
   const [movieList, setMovieList] = useState([]);
+  const [trendingMovies, setTrendingMovies] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
 
@@ -46,7 +48,7 @@ function App() {
       }
 
       const data = await response.json();
-      console.log(data);  
+      // console.log(data);  
     
 
       if(data.Response === 'False') {
@@ -54,6 +56,12 @@ function App() {
         setMovieList([]);
         return;
       }
+
+      if(query && data.results.length > 0){
+        await updateSearchCount(query, data.results[0]);
+      }
+
+      getTrendingMovies();
 
       setMovieList(data.results || []);
       
@@ -68,9 +76,21 @@ function App() {
     }
   }
 
+  const loadTrendingMovies = async () => {
+    try {
+      const movies = await getTrendingMovies();
+
+      setTrendingMovies(movies);
+    } catch (error) {
+      console.error(`Error fetching trending movies: ${error}`);
+    }
+  }
+
   useEffect(()=>{
     fetchMovies(debouncedSearchTerm);
   },[debouncedSearchTerm])
+
+  
 
   return (
     <main>
