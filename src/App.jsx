@@ -2,7 +2,7 @@ import  { useEffect, useState,} from 'react'
 import Search from './components/search'
 import Spinner from './components/Spinner';
 import { MovieCard } from './components/MovieCard';
-import { useClickAway, useDebounce } from 'react-use';
+import { useDebounce } from 'react-use';
 import { updateSearchCount, getTrendingMovies } from './appwrite';
 
 //API - Application Programming Interface - a set of rules that allows one software application to talk to another
@@ -101,7 +101,7 @@ function App() {
         <div className="wrapper bg-[url(./hero-bg.png)] bg-no-repeat w-full">
           <header className=''>
             <img src="./hero.png" alt="" />
-            <h1>Find <span className="text-gradient">Movies</span> You'll Enjoy without the hassle</h1>
+            <h1>Find <span className="text-gradient">Movies</span> You&apos;ll Enjoy without the hassle</h1>
 
             <Search searchTerm = {searchTerm} setSearchTerm = {setSearchTerm} />
           
