@@ -14,9 +14,7 @@ const API_OPTIONS = {
   method: 'GET',
   headers: {
     accept: 'application/json', // it is to define what kind of data do we accept in our application
-    Authorization: `Bearer ${API_KEY}` // this one verifies who is trying to make that request
-    // Authorization: `Bearer eyJhbGciOiJIUzI1NiJ9.eyJhdWQiOiJhZDEwYjQyOTUxZTg0YjQxMWJkZGQzZTk2ZWUyYzVmMiIsIm5iZiI6MTczOTY4NDc2OC40OTUwMDAxLCJzdWIiOiI2N2IxN2JhMDgxMjczNjJhZjc2ZGIyYmMiLCJzY29wZXMiOlsiYXBpX3JlYWQiXSwidmVyc2lvbiI6MX0.5Wg7XscL1oa6MCy9LMAim5_mZRYnz674eFc9_IQ4VkM` 
-    
+    Authorization: `Bearer ${API_KEY}` // this one verifies who is trying to make that request    
   }
 }
 
@@ -90,6 +88,11 @@ function App() {
     fetchMovies(debouncedSearchTerm);
   },[debouncedSearchTerm])
 
+
+  useEffect(()=> {
+    loadTrendingMovies();
+  })
+
   
 
   return (
@@ -103,6 +106,21 @@ function App() {
             <Search searchTerm = {searchTerm} setSearchTerm = {setSearchTerm} />
           
           </header>
+
+          {trendingMovies.length > 0 && (
+            <section className="trending">
+              <h2>Trending Movies</h2>
+              <ul>
+                {trendingMovies.map((movie, index) => (
+                  <li key={movie.$id}>
+                    <p>{index+1}</p>
+                    <img src={movie.poster_url} alt={movie.title} />
+                    <p>{movie.title}</p>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
 
           <section className="all-movies">
             <h2>All Movies</h2>
